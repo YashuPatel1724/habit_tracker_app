@@ -27,34 +27,33 @@ class _HomePageState extends State<HomePage> {
   void createNewHabit() {
     showDialog(
       context: context,
-      builder: (context) =>
-          AlertDialog(
-            content: TextField(
-              controller: textController,
-              decoration: InputDecoration(hintText: 'Create a new habit'),
-            ),
-            actions: [
-              MaterialButton(
-                onPressed: () {
-                  String newHabitName = textController.text;
+      builder: (context) => AlertDialog(
+        content: TextField(
+          controller: textController,
+          decoration: InputDecoration(hintText: 'Create a new habit'),
+        ),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              String newHabitName = textController.text;
 
-                  context.read<HabitDatabase>().addHabit(newHabitName);
+              context.read<HabitDatabase>().addHabit(newHabitName);
 
-                  Navigator.pop(context);
+              Navigator.pop(context);
 
-                  textController.clear();
-                },
-                child: Text('Save'),
-              ),
-              MaterialButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  textController.clear();
-                },
-                child: Text('Cancle'),
-              )
-            ],
+              textController.clear();
+            },
+            child: Text('Save'),
           ),
+          MaterialButton(
+            onPressed: () {
+              Navigator.pop(context);
+              textController.clear();
+            },
+            child: Text('Cancle'),
+          )
+        ],
+      ),
     );
   }
 
@@ -67,78 +66,83 @@ class _HomePageState extends State<HomePage> {
   void editHabit(HabitModal habit) {
     textController.text = habit.name;
 
-    showDialog(context: context, builder: (context) =>
-        AlertDialog(
-          content: TextField(
-            controller: textController,
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        content: TextField(
+          controller: textController,
+        ),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              String newHabitName = textController.text;
+
+              context
+                  .read<HabitDatabase>()
+                  .updateHabitName(habit.id, newHabitName);
+
+              Navigator.pop(context);
+
+              textController.clear();
+            },
+            child: Text('Save'),
           ),
-          actions: [
-            MaterialButton(
-              onPressed: () {
-                String newHabitName = textController.text;
-
-                context.read<HabitDatabase>().updateHabitName(
-                    habit.id, newHabitName);
-
-                Navigator.pop(context);
-
-                textController.clear();
-              },
-              child: Text('Save'),
-            ),
-            MaterialButton(
-              onPressed: () {
-                Navigator.pop(context);
-                textController.clear();
-              },
-              child: Text('Cancle'),
-            )
-          ],
-        ),);
+          MaterialButton(
+            onPressed: () {
+              Navigator.pop(context);
+              textController.clear();
+            },
+            child: Text('Cancle'),
+          )
+        ],
+      ),
+    );
   }
 
   void deletHabit(HabitModal habit) {
     textController.text = habit.name;
 
-    showDialog(context: context, builder: (context) =>
-        AlertDialog(
-          title: Text('Are sure want to delete?'),
-          actions: [
-            MaterialButton(
-              onPressed: () {
-                context.read<HabitDatabase>().deleteHabit(habit.id);
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Are sure want to delete?'),
+        actions: [
+          MaterialButton(
+            onPressed: () {
+              context.read<HabitDatabase>().deleteHabit(habit.id);
 
-                Navigator.pop(context);
-              },
-              child: Text('Delete'),
-            ),
-            MaterialButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Cancle'),
-            )
-          ],
-        ),);
+              Navigator.pop(context);
+            },
+            child: Text('Delete'),
+          ),
+          MaterialButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text('Cancle'),
+          )
+        ],
+      ),
+    );
   }
 
   Widget build(BuildContext context) {
     ThemeProvider themeProviderTrue =
-    Provider.of<ThemeProvider>(context, listen: true);
+        Provider.of<ThemeProvider>(context, listen: true);
     ThemeProvider themeProviderFalse =
-    Provider.of<ThemeProvider>(context, listen: false);
+        Provider.of<ThemeProvider>(context, listen: false);
     return Scaffold(
-        backgroundColor: Theme
-            .of(context)
-            .colorScheme
-            .surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: AppBar(
           elevation: 0,
+          title: Text(
+            'Home Page',
+            style: TextStyle(
+                fontSize: 22, fontWeight: FontWeight.bold, color: Theme.of(context).colorScheme.inversePrimary),
+          ),
+          centerTitle: true,
           backgroundColor: Colors.transparent,
-          foregroundColor: Theme
-              .of(context)
-              .colorScheme
-              .inversePrimary,
+          foregroundColor: Theme.of(context).colorScheme.inversePrimary,
           actions: [
             Switch(
               value: themeProviderTrue.isDarkMode,
@@ -150,10 +154,7 @@ class _HomePageState extends State<HomePage> {
         ),
         floatingActionButton: FloatingActionButton(
           elevation: 0,
-          backgroundColor: Theme
-              .of(context)
-              .colorScheme
-              .tertiary,
+          backgroundColor: Theme.of(context).colorScheme.tertiary,
           onPressed: createNewHabit,
           child: Icon(
             Icons.add,
@@ -165,8 +166,7 @@ class _HomePageState extends State<HomePage> {
             _buildHeatMap(),
             _buildHabitList(),
           ],
-        )
-    );
+        ));
   }
 
   Widget _buildHeatMap() {
@@ -175,15 +175,17 @@ class _HomePageState extends State<HomePage> {
     List<HabitModal> currentHabit = habitDatabase.currentHabits;
 
     return FutureBuilder<DateTime?>(
-      future: habitDatabase.getFirstLaunchData(), builder: (context, snapshot) {
-      if (snapshot.hasData) {
-        return HeatMapScreen(startDate: snapshot.data!, datasets: prepHeatMapDataset(currentHabit));
-      }
-      else
-        {
+      future: habitDatabase.getFirstLaunchData(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return HeatMapScreen(
+              startDate: snapshot.data!,
+              datasets: prepHeatMapDataset(currentHabit));
+        } else {
           return Container();
         }
-    },);
+      },
+    );
   }
 
   Widget _buildHabitList() {

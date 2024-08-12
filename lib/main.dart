@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:habit_tracker_app/DataBase/habit_database.dart';
 import 'package:habit_tracker_app/provider/theme_provider.dart';
 import 'package:habit_tracker_app/view/screen/home_page.dart';
+import 'package:habit_tracker_app/view/screen/intro_screen.dart';
+import 'package:habit_tracker_app/view/screen/splash_screen.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -30,8 +32,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      initialRoute: '/',
       routes: {
-        '/': (context) => HomePage(),
+        '/': (context) => SplashScreen(),
+        '/intro': (context) => IntroScreen(),
+        '/home': (context) => HomePage(),
       },
       theme: Provider.of<ThemeProvider>(context).themeData,
     );
